@@ -1,5 +1,7 @@
 import json
 
+from django.urls import reverse
+
 from animal.models import Animal
 from animal.queries import get_animal_by_id
 from category.models import Category
@@ -11,15 +13,6 @@ from pet_shop.tests import (
     BaseTestCase,
     client,
 )
-
-base_url = "/api/v1"
-urls = {
-    "all_animals": f"{base_url}/animals/",
-    "new_animal": f"{base_url}/animals/new",
-    "edit_animal": f"{base_url}/animals/%s/edit",
-    "delete_animal": f"{base_url}/animals/%s/delete",
-    "get_animal": f"{base_url}/animals/%s",
-}
 
 
 class TestAnimalListApiView(BaseTestCase):
@@ -49,7 +42,7 @@ class TestAnimalListApiView(BaseTestCase):
         )
         animal.save()
 
-        response = client.get(path=urls.get("all_animals"))
+        response = client.get(path=reverse("all_animals"))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -65,7 +58,7 @@ class TestAnimalListApiView(BaseTestCase):
 
     def test_get_not_found(self):
 
-        response = client.get(path=urls.get("all_animals"))
+        response = client.get(path=reverse("all_animals"))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
@@ -90,7 +83,7 @@ class TestNewAnimalApiView(BaseTestCase):
         image.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -115,7 +108,7 @@ class TestNewAnimalApiView(BaseTestCase):
         image.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -141,7 +134,7 @@ class TestNewAnimalApiView(BaseTestCase):
         image.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -169,7 +162,7 @@ class TestNewAnimalApiView(BaseTestCase):
         image.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -200,7 +193,7 @@ class TestNewAnimalApiView(BaseTestCase):
         image.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -241,7 +234,7 @@ class TestNewAnimalApiView(BaseTestCase):
         animal.save()
 
         response = client.post(
-            path=urls.get("new_animal"),
+            path=reverse("new_animal"),
             data=json.dumps({
                 "name": "test_animal_name",
                 "animal_id": 5720385832,
@@ -279,7 +272,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -322,7 +315,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % 2,
+            path=reverse("edit_animal", kwargs={'_id': 2}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -357,7 +350,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -390,7 +383,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -425,7 +418,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -460,7 +453,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "invalid_status"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal.animal_id,
@@ -504,7 +497,7 @@ class TestEditAnimalApiView(BaseTestCase):
         new_status = "approved"
 
         response = client.patch(
-            path=urls.get("edit_animal") % animal.id,
+            path=reverse("edit_animal", kwargs={'_id': animal.id}),
             data=json.dumps({
                 "name": animal.name,
                 "animal_id": animal_2.animal_id,
@@ -541,7 +534,9 @@ class TestDeleteAnimalApiView(BaseTestCase):
 
         animal_id = animal.id
 
-        response = client.delete(path=urls.get("delete_animal") % animal.id)
+        response = client.delete(
+            path=reverse("delete_animal", kwargs={'_id': animal.id}),
+        )
 
         self.assertEqual(response.status_code, 204)
 
@@ -551,7 +546,7 @@ class TestDeleteAnimalApiView(BaseTestCase):
 
     def test_delete_not_found(self):
 
-        response = client.delete(path=urls.get("delete_animal") % 1)
+        response=client.delete(path=reverse("delete_animal", kwargs={'_id': 1}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
@@ -585,7 +580,7 @@ class TestAnimalApiView(BaseTestCase):
         )
         animal.save()
 
-        response = client.get(path=urls.get("get_animal") % animal.id)
+        response = client.get(path=reverse("get_animal", kwargs={'_id': animal.id}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -600,7 +595,7 @@ class TestAnimalApiView(BaseTestCase):
 
     def test_get_not_found(self):
 
-        response = client.get(path=urls.get("get_animal") % 1)
+        response = client.get(path=reverse("get_animal", kwargs={'_id': 1}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)

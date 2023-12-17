@@ -2,6 +2,7 @@ import json
 import os.path
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 
 from animal.models import Animal
 from animal.queries import get_animal_by_id
@@ -14,12 +15,6 @@ from pet_shop.tests import (
     BaseTestCase,
     client,
 )
-
-base_url = "/api/v1"
-urls = {
-    "new_image": f"{base_url}/images/new",
-    "delete_image": f"{base_url}/images/%s/delete",
-}
 
 
 class TestNewImageApiView(BaseTestCase):
@@ -54,7 +49,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -98,7 +93,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -122,7 +117,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -166,7 +161,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -188,7 +183,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -227,7 +222,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -266,7 +261,7 @@ class TestNewImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -308,7 +303,7 @@ class TestDeleteImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -322,13 +317,15 @@ class TestDeleteImageApiView(BaseTestCase):
         self.assertNotEqual(animal.image, None)
         self.assertEqual(animal.image.id, 1)
 
-        response = client.delete(path=urls.get("delete_image") % animal.image.id)
+        response = client.delete(
+            path=reverse("delete_image", kwargs={'_id': animal.image.id}),
+        )
 
         self.assertEqual(response.status_code, 204)
 
     def test_delete_not_found(self):
 
-        response = client.delete(path=urls.get("delete_image") % 1)
+        response = client.delete(path=reverse("delete_image", kwargs={'_id': 1}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
@@ -364,7 +361,7 @@ class TestDeleteImageApiView(BaseTestCase):
         }
 
         response = client.post(
-            path=urls.get("new_image"),
+            path=reverse("new_image"),
             data=data,
             format="multipart",
         )
@@ -382,7 +379,9 @@ class TestDeleteImageApiView(BaseTestCase):
         image.name = "invalid_image_file"
         image.save()
 
-        response = client.delete(path=urls.get("delete_image") % animal.image.id)
+        response = client.delete(
+            path=reverse("delete_image", kwargs={'_id': animal.image.id}),
+        )
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 400)

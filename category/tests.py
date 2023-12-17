@@ -1,5 +1,7 @@
 import json
 
+from django.urls import reverse
+
 from category.models import Category
 from category.queries import get_category_by_id
 from pet_shop.error_messages import *
@@ -9,15 +11,6 @@ from pet_shop.tests import (
     client,
 )
 
-base_url = "/api/v1"
-urls = {
-    "all_categories": f"{base_url}/categories/",
-    "new_category": f"{base_url}/categories/new",
-    "edit_category": f"{base_url}/categories/%s/edit",
-    "delete_category": f"{base_url}/categories/%s/delete",
-    "get_category": f"{base_url}/categories/%s",
-}
-
 
 class TestCategoryListApiView(BaseTestCase):
 
@@ -26,7 +19,7 @@ class TestCategoryListApiView(BaseTestCase):
         category = Category(name="test_category")
         category.save()
 
-        response = client.get(path=urls.get("all_categories"))
+        response = client.get(path=reverse("all_categories"))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -37,7 +30,7 @@ class TestCategoryListApiView(BaseTestCase):
 
     def test_get_not_found(self):
 
-        response = client.get(path=urls.get("all_categories"))
+        response = client.get(path=reverse("all_categories"))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
@@ -49,7 +42,7 @@ class TestNewCategoryApiView(BaseTestCase):
     def test_post_pass(self):
 
         response = client.post(
-            path=urls.get("new_category"),
+            path=reverse("new_category"),
             data=json.dumps({"name": "test_category_name"}),
             content_type='application/json',
         )
@@ -61,7 +54,7 @@ class TestNewCategoryApiView(BaseTestCase):
     def test_post_wrong_data_body_validation(self):
 
         response = client.post(
-            path=urls.get("new_category"),
+            path=reverse("new_category"),
             data=json.dumps({"name": True}),
             content_type='application/json',
         )
@@ -76,7 +69,7 @@ class TestNewCategoryApiView(BaseTestCase):
         category.save()
 
         response = client.post(
-            path=urls.get("new_category"),
+            path=reverse("new_category"),
             data=json.dumps({"name": category.name}),
             content_type='application/json',
         )
@@ -96,7 +89,7 @@ class TestEditCategoryApiView(BaseTestCase):
         new_name = "test_category_updated"
 
         response = client.patch(
-            path=urls.get("edit_category") % category.id,
+            path=reverse("edit_category", kwargs={'_id': category.id}),
             data=json.dumps({"name": new_name}),
             content_type='application/json',
         )
@@ -114,7 +107,7 @@ class TestEditCategoryApiView(BaseTestCase):
         new_name = "test_category_updated"
 
         response = client.patch(
-            path=urls.get("edit_category") % 2,
+            path=reverse("edit_category", kwargs={'_id': 2}),
             data=json.dumps({"name": new_name}),
             content_type='application/json',
         )
@@ -129,7 +122,7 @@ class TestEditCategoryApiView(BaseTestCase):
         category.save()
 
         response = client.patch(
-            path=urls.get("edit_category") % category.id,
+            path=reverse("edit_category", kwargs={'_id': category.id}),
             data=json.dumps({"name": True}),
             content_type='application/json',
         )
@@ -147,7 +140,7 @@ class TestEditCategoryApiView(BaseTestCase):
         category_2.save()
 
         response = client.patch(
-            path=urls.get("edit_category") % category.id,
+            path=reverse("edit_category", kwargs={'_id': category.id}),
             data=json.dumps({"name": category_2.name}),
             content_type='application/json',
         )
@@ -166,7 +159,10 @@ class TestDeleteCategoryApiView(BaseTestCase):
 
         category_id = category.id
 
-        response = client.delete(path=urls.get("delete_category") % category.id)
+
+        response = client.delete(
+            path=reverse("delete_category", kwargs={'_id': category.id}),
+        )
 
         self.assertEqual(response.status_code, 204)
 
@@ -176,7 +172,7 @@ class TestDeleteCategoryApiView(BaseTestCase):
 
     def test_delete_not_found(self):
 
-        response = client.delete(path=urls.get("delete_category") % 1)
+        response = client.delete(path=reverse("delete_category", kwargs={'_id': 1}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)
@@ -190,7 +186,9 @@ class TestCategoryApiView(BaseTestCase):
         category = Category(name="test_category")
         category.save()
 
-        response = client.get(path=urls.get("get_category") % category.id)
+        response = client.get(
+            path=reverse("get_category", kwargs={'_id': category.id}),
+        )
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -200,7 +198,7 @@ class TestCategoryApiView(BaseTestCase):
 
     def test_get_not_found(self):
 
-        response = client.get(path=urls.get("get_category") % 1)
+        response = client.get(path=reverse("get_category", kwargs={'_id': 1}))
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 404)

@@ -24,6 +24,7 @@ if not os.path.exists(MEDIA_ROOT):
 DEFAULT_MEDIA_URL = "http://127.0.0.1:8000/media/"
 MAX_IMAGE_SIZE = 5
 
+BASE_URL = "api/v1/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

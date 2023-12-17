@@ -8,11 +8,11 @@ from drf_spectacular.views import (
 )
 
 from pet_shop import settings
-
+from pet_shop.settings import BASE_URL
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(
+    path(BASE_URL, include(
         [
             path('categories/', include('category.urls'), name="categories"),
             path('marks/', include('mark.urls'), name="marks"),
