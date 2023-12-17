@@ -1,0 +1,998 @@
+openapi: 3.0.3
+info:
+  title: Pet Shop API
+  version: v1.0.0
+  description: "\n        The documentation of the App.\n        This documentation\
+    \ contains all implemented endpoints on the Back-End.\n        "
+paths:
+  /api/schema:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/animals/:
+    get:
+      operationId: v1_animals_list
+      description: "\n            - An endpoint to retrieve all existing animals.\n\
+        \            - If there is no animals it will return an error 404 - The animals\
+        \ don't exist!\n            "
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The animals don't exist!
+          description: ''
+  /api/v1/animals/{_id}:
+    get:
+      operationId: v1_animals_retrieve
+      description: "\n            - An endpoint to retrieve some specific animal (by\
+        \ ID - record of the animal).\n            - If non existing animal is trying\
+        \ to retrieve it will return an error 404 - The animal doesn't exist!.\n \
+        \           "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The animal doesn't exist!
+          description: ''
+  /api/v1/animals/{_id}/delete:
+    delete:
+      operationId: v1_animals_delete_destroy
+      description: "\n            - An endpoint to delete existing animal (by ID -\
+        \ record of the animal).\n            - If non existing animal is trying to\
+        \ delete it will return an error 404 - The animal doesn't exist!.\n      \
+        \      "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The animal has successfully deleted!
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The animal doesn't exist!
+          description: ''
+  /api/v1/animals/{_id}/edit:
+    patch:
+      operationId: v1_animals_edit_partial_update
+      description: "\n            - An endpoint to edit existing animal (by ID - record\
+        \ of the animal).\n            - If one of the body data is wrong or some\
+        \ relation field doesn't exist \n            it will return an error 400 -\
+        \ Wrong data\n            - If non existing animal is trying to edit it will\
+        \ return an error 404 - The animal doesn't exist!\n            "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditAnimalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditAnimalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EditAnimalRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The animal has successfully edited!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The animal doesn't exist!
+          description: ''
+  /api/v1/animals/new:
+    post:
+      operationId: v1_animals_new_create
+      description: "\n            - An endpoint to create new animal.\n          \
+        \  - If one of the body data is wrong or some relation field doesn't exist\
+        \ \n            it will return an error 400 - Wrong data\n            "
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAnimalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewAnimalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewAnimalRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: The animal has successfully created!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+  /api/v1/categories/:
+    get:
+      operationId: v1_categories_list
+      description: "\n            - An endpoint to retrieve all existing categories.\n\
+        \            - If there is no categories it will return an error 404 - The\
+        \ animals don't exist!\n            "
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The categories don't exist!
+          description: ''
+  /api/v1/categories/{_id}:
+    get:
+      operationId: v1_categories_retrieve
+      description: "\n            - An endpoint to retrieve some specific category\
+        \ (by ID - record of the category).\n            - If non existing category\
+        \ is trying to retrieve it will return an error 404 - The category doesn't\
+        \ exist!.\n            "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The category doesn't exist!
+          description: ''
+  /api/v1/categories/{_id}/delete:
+    delete:
+      operationId: v1_categories_delete_destroy
+      description: "\n            - An endpoint to delete existing category (by ID\
+        \ - record of the category).\n            - If non existing category is trying\
+        \ to delete it will return an error 404 - The category doesn't exist!.\n \
+        \           "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The category has successfully deleted!
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The category doesn't exist!
+          description: ''
+  /api/v1/categories/{_id}/edit:
+    patch:
+      operationId: v1_categories_edit_partial_update
+      description: "\n            - An endpoint to edit existing category (by ID -\
+        \ record of the category).\n            - If one of the body data is wrong\
+        \ it will return an error 400 - Wrong data\n            - If non existing\
+        \ category is trying to edit it will return an error 404 - The category doesn't\
+        \ exist!\n            "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EditCategoryRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The category has successfully edited!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The category doesn't exist!
+          description: ''
+  /api/v1/categories/new:
+    post:
+      operationId: v1_categories_new_create
+      description: "\n            - An endpoint to create new category.\n        \
+        \    - If one of the body data is wrong it will return an error 400 - Wrong\
+        \ data\n            "
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCategoryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewCategoryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewCategoryRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: The category has successfully created!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+  /api/v1/images/{_id}/delete:
+    delete:
+      operationId: v1_images_delete_destroy
+      description: "\n            - An endpoint to delete existing image (by ID -\
+        \ record of the image).\n            - If non existing image is trying to\
+        \ delete it will return an error 404 - The image doesn't exist!.\n       \
+        \     "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The image has successfully deleted!
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The image doesn't exist!
+          description: ''
+  /api/v1/images/new:
+    post:
+      operationId: v1_images_new_create
+      description: "\n            - An endpoint to create new image for some animal.\n\
+        \            - If one of the body data is wrong it will return an error 400\
+        \ - Wrong data\n            - Adding new image on some animal that has the\
+        \ image, old image will be deleted and new will be created.\n            -\
+        \ To use binary field (button) change the body from application/json to multipart/form-data\n\
+        \            "
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewImageRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: The image has successfully created!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+  /api/v1/marks/:
+    get:
+      operationId: v1_marks_list
+      description: "\n            - An endpoint to retrieve all existing marks.\n\
+        \            - If there is no marks it will return an error 404 - The marks\
+        \ don't exist!\n            "
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mark'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The marks don't exist!
+          description: ''
+  /api/v1/marks/{_id}:
+    get:
+      operationId: v1_marks_retrieve
+      description: "\n            - An endpoint to retrieve some specific mark (by\
+        \ ID - record of the mark).\n            - If non existing mark is trying\
+        \ to retrieve it will return an error 404 - The mark doesn't exist!.\n   \
+        \         "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mark'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The mark doesn't exist!
+          description: ''
+  /api/v1/marks/{_id}/delete:
+    delete:
+      operationId: v1_marks_delete_destroy
+      description: "\n            - An endpoint to delete existing mark (by ID - record\
+        \ of the mark).\n            - If non existing mark is trying to delete it\
+        \ will return an error 404 - The mark doesn't exist!.\n            "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The mark has successfully deleted!
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The mark doesn't exist!
+          description: ''
+  /api/v1/marks/{_id}/edit:
+    patch:
+      operationId: v1_marks_edit_partial_update
+      description: "\n            - An endpoint to edit existing mark (by ID - record\
+        \ of the mark).\n            - If one of the body data is wrong it will return\
+        \ an error 400 - Wrong data\n            - If non existing mark is trying\
+        \ to edit it will return an error 404 - The mark doesn't exist!\n        \
+        \    "
+      parameters:
+      - in: path
+        name: _id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditMarkRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditMarkRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EditMarkRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                description: The mark has successfully edited!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: The mark doesn't exist!
+          description: ''
+  /api/v1/marks/new:
+    post:
+      operationId: v1_marks_new_create
+      description: "\n            - An endpoint to create new mark.\n            -\
+        \ If one of the body data is wrong it will return an error 400 - Wrong data\n\
+        \            "
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMarkRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewMarkRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewMarkRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                description: The mark has successfully created!
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Wrong data
+          description: ''
+components:
+  schemas:
+    Animal:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+        animal_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 32
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        category:
+          $ref: '#/components/schemas/AnimalCategory'
+        mark:
+          $ref: '#/components/schemas/AnimalMark'
+        image:
+          $ref: '#/components/schemas/AnimalImage'
+      required:
+      - animal_id
+      - category
+      - created_at
+      - id
+      - image
+      - mark
+      - name
+      - status
+    AnimalCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 32
+      required:
+      - id
+      - name
+    AnimalImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        path:
+          type: string
+          maxLength: 255
+      required:
+      - id
+      - path
+    AnimalMark:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 32
+      required:
+      - id
+      - name
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+          maxLength: 32
+      required:
+      - created_at
+      - id
+      - name
+    EditAnimalRequest:
+      type: object
+      properties:
+        animal_id:
+          type: integer
+          description: The number of the animal, this field is unique for some animal
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+          description: The name of the animal, e.g. Max
+        status:
+          type: string
+          minLength: 1
+          description: The status of the animal, could be set/approved/delivered
+        category_id:
+          type: integer
+          description: ID of some specific category
+          minimum: 1
+        mark_id:
+          type: integer
+          description: ID of some specific mark
+          minimum: 1
+      required:
+      - animal_id
+      - category_id
+      - mark_id
+      - name
+      - status
+    EditCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: The name of the category
+      required:
+      - name
+    EditMarkRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: The name of the mark
+      required:
+      - name
+    Mark:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+          maxLength: 32
+      required:
+      - created_at
+      - id
+      - name
+    NewAnimalRequest:
+      type: object
+      properties:
+        animal_id:
+          type: integer
+          description: The number of the animal, this field is unique for some animal
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+          description: The name of the animal, e.g. Max
+        status:
+          type: string
+          minLength: 1
+          description: The status of the animal, could be set/approved/delivered
+        category_id:
+          type: integer
+          description: ID of some specific category
+          minimum: 1
+        mark_id:
+          type: integer
+          description: ID of some specific mark
+          minimum: 1
+      required:
+      - animal_id
+      - category_id
+      - mark_id
+      - name
+      - status
+    NewCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: The name of the category
+      required:
+      - name
+    NewImageRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: The image of the animal
+        id:
+          type: integer
+          description: The ID of the animal record
+      required:
+      - id
+      - image
+    NewMarkRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: The name of the mark
+      required:
+      - name
+    StatusEnum:
+      enum:
+      - set
+      - approved
+      - delivered
+      type: string
+      description: |-
+        * `set` - Set
+        * `approved` - Approved
+        * `delivered` - Delivered
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
